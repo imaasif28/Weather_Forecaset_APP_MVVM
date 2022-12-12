@@ -1,13 +1,12 @@
 package com.aasif.weatherforecasetmvvm.ui.weather.current
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-
+import androidx.lifecycle.ViewModelProvider
 import com.aasif.weatherforecasetmvvm.R
 import com.aasif.weatherforecasetmvvm.data.provider.UnitProviderImpl
 import com.aasif.weatherforecasetmvvm.internal.glide.GlideApp
@@ -34,14 +33,15 @@ class CurrentWeatherFragment : ScopedFragment(), KodeinAware {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(CurrentWeatherViewModel::class.java)
+        viewModel =
+            ViewModelProvider(this, viewModelFactory).get(CurrentWeatherViewModel::class.java)
         bindUI()
     }
 
     private fun bindUI() = launch {
         val currentWeather = viewModel.weather.await()
         val weatherLocation = viewModel.location.await()
-        weatherLocation.observe(viewLifecycleOwner, Observer {location ->
+        weatherLocation.observe(viewLifecycleOwner, Observer { location ->
             if (location == null) return@Observer
             updateLocation(location.name)
         })
@@ -62,7 +62,7 @@ class CurrentWeatherFragment : ScopedFragment(), KodeinAware {
                 GlideApp.with(this@CurrentWeatherFragment)
                     .load(it.weatherIcon[0])
                     .into(imageView_condition_icon)
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 println("debug: exception occurred ${e.message.toString()}")
             }
         })
@@ -71,10 +71,8 @@ class CurrentWeatherFragment : ScopedFragment(), KodeinAware {
     private fun chooseLocalizedUnitAbbreviation(metric: String, imperial: String): String {
         //todo get unit from settings
         val unitProvider = UnitProviderImpl(requireContext())
-        if (unitProvider.getUnitSystem() == "f")
-            return imperial
-        else
-            return metric
+        return if (unitProvider.getUnitSystem() == "f") imperial
+        else metric
     }
 
     private fun updateLocation(location: String) {

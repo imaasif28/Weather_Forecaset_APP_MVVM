@@ -7,28 +7,32 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.aasif.weatherforecasetmvvm.data.db.entity.CurrentWeatherEntry
 import com.aasif.weatherforecasetmvvm.data.db.entity.WeatherLocation
+import com.aasif.weatherforecasetmvvm.data.db.network.accuweather.AccuWeatherResponse
 import com.aasif.weatherforecasetmvvm.internal.DataTypeConverter
 
 @Database(
-    entities = [CurrentWeatherEntry::class, WeatherLocation::class],
+    entities = [CurrentWeatherEntry::class, WeatherLocation::class, AccuWeatherResponse::class],
     version = 1
 )
 @TypeConverters(DataTypeConverter::class)
 abstract class ForecastDatabase : RoomDatabase() {
-    abstract fun currentWeatherDao() : CurrentWeatherDao
+    abstract fun currentWeatherDao(): CurrentWeatherDao
     abstract fun weatherLocationDao(): WeatherLocationDao
+    abstract fun forecastDao(): ForecastDao
 
     companion object {
-        @Volatile private var instance : ForecastDatabase? = null
+        @Volatile
+        private var instance: ForecastDatabase? = null
         private val LOCK = Any()
 
-        operator fun invoke(context: Context) = instance ?: synchronized(LOCK){
-            instance ?: buildDatabase(context).also { instance = it}
+        operator fun invoke(context: Context) = instance ?: synchronized(LOCK) {
+            instance ?: buildDatabase(context).also { instance = it }
         }
 
         private fun buildDatabase(context: Context) =
-            Room.databaseBuilder(context.applicationContext,
-                ForecastDatabase::class.java, "forecast.db")
-                .build()
+            Room.databaseBuilder(
+                context.applicationContext,
+                ForecastDatabase::class.java, "forecast.db"
+            ).build()
     }
 }

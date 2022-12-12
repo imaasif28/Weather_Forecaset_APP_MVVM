@@ -56,13 +56,13 @@ class ForecastRepositoryImpl(
         val lastWeatherLocation = weatherLocationDao.getLocation().value
         if (lastWeatherLocation == null){
             //todo this condition is always true fix this
-            println("debug from initweather: lastWeatherLocation is null")
+            println("debug from initweatherData: lastWeatherLocation is null")
             fetchCurrentWeather()
             return
         }
-        val temp = lastWeatherLocation
-        if (isFetchCurrentNeeded(temp!!.zonedDateTime)
-            || locationProvider.hasLocationChanged(temp!!))
+//        val temp = lastWeatherLocation
+        if (isFetchCurrentNeeded(lastWeatherLocation.zonedDateTime)
+            || locationProvider.hasLocationChanged(lastWeatherLocation))
             fetchCurrentWeather()
     }
 
