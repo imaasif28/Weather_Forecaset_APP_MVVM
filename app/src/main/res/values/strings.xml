@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Weather Forecaset MVVM</string>
+    <string name="metric">m</string>
+    <string name="imperial">f</string>
+</resources>
