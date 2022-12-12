@@ -7,6 +7,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -30,11 +31,12 @@ interface AccuWeatherApiService {
     fun getLocationFromApiAsync(
         @Query("q") location: String = "delhi"
     ): Deferred<AccuWeatherLocationResponse>
-    companion object{
-        operator fun invoke(connectivityInterceptor: ConnectivityInterceptor): AccuWeatherApiService{
+
+    companion object {
+        operator fun invoke(connectivityInterceptor: ConnectivityInterceptor): AccuWeatherApiService {
             val requestInterceptor = Interceptor { chain ->
                 val url = chain.request()
-                    .url()
+                    .url
                     .newBuilder()
                     .addQueryParameter("apikey", ACCU_WEATHER_API_KEY)
                     .build()
@@ -45,11 +47,13 @@ interface AccuWeatherApiService {
 
                 return@Interceptor chain.proceed(request)
             }
+            val logging = HttpLoggingInterceptor()
+            logging.level = HttpLoggingInterceptor.Level.BODY
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)
                 .addInterceptor(connectivityInterceptor)
+                .addInterceptor(logging)
                 .build()
-
             return Retrofit.Builder()
                 .client(okHttpClient)
                 .baseUrl(BASE_URL)

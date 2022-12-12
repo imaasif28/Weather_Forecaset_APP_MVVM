@@ -1,6 +1,5 @@
 package com.aasif.weatherforecasetmvvm.data.db.network
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import com.aasif.weatherforecasetmvvm.internal.NoConnectivityException
@@ -15,7 +14,6 @@ class ConnectivityInterceptorImpl(context: Context) : ConnectivityInterceptor {
         return chain.proceed(chain.request())
     }
 
-    @SuppressLint("MissingPermission")
     private fun isOnline(): Boolean{
         val connectivityManager = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
